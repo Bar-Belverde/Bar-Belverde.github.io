@@ -282,8 +282,9 @@ function parseCSV(text) {
   if (f !== "" || row.length) { row.push(f); out.push(row); }
   return out;
 }
-function rowsFromCSV(text) {
-  const t = parseCSV(text || ""); if (t.length < 2) return null;
+function rowsFromCSV(text) { return rowsFromTable(parseCSV(text || "")); }
+function rowsFromTable(t) {
+  if (!t || t.length < 2) return null;
   const hdr = t[0].map(norm);
   const K = ["Sezione","Categoria","Nome","Dettaglio","Origine","Descrizione","Prezzo","Visibile"];
   const pos = Object.fromEntries(K.map(k => [k, hdr.indexOf(norm(k))]));
@@ -323,7 +324,7 @@ const head = (eyebrow, title, sub) =>
 const uniq = a => a.filter((x, i) => a.findIndex(y => norm(y) === norm(x)) === i);
 
 // ---------- costruzione pagine ----------
-function build(allRows) {
+function build(allRows, status) {
   const rows = allRows.filter(r => !norm(r.Visibile).startsWith("n"));
   const bySec = new Map();
   for (const r of rows) { const k = norm(r.Sezione); if (!bySec.has(k)) bySec.set(k, {name: r.Sezione.trim(), rows: []}); bySec.get(k).rows.push(r); }
@@ -370,7 +371,8 @@ function build(allRows) {
   }
   pages[pages.length - 1].html +=
     `<div class="footerpage" style="height:auto;padding-top:26px;"><div class="logowrap" style="padding:6px;">` +
-    `<img src="${LOGO}" alt="Bar Belverde" style="width:70px;height:70px;"></div><p>${esc(FOOTER)}</p></div>`;
+    `<img src="${LOGO}" alt="Bar Belverde" style="width:70px;height:70px;"></div><p>${esc(FOOTER)}</p>` +
+    `<div style="font-size:11px;opacity:.65;margin-top:4px;">${esc(status || "")}</div></div>`;
   return {pages, chips};
 }
 
@@ -406,33 +408,63 @@ nextBtn.addEventListener("click", () => goTo(currentIndex() + 1));
 document.addEventListener("click", e => { const c = e.target.closest("[data-page]"); if (c) goTo(parseInt(c.dataset.page)); });
 window.addEventListener("keydown", e => { if (e.key === "ArrowRight") goTo(currentIndex() + 1); if (e.key === "ArrowLeft") goTo(currentIndex() - 1); });
 
-function render(rows) {
+function render(rows, status) {
   const keep = book.children.length ? currentIndex() : 0;
-  const {pages, chips} = build(rows);
+  const {pages, chips} = build(rows, status);
   book.innerHTML = pages.map(p => `<section class="page" data-title="${esc(p.title)}" data-chapter="${esc(p.chapter)}">${p.html}</section>`).join("");
   topnav.innerHTML = chips.map(c => `<button class="chip" data-chapter="${esc(c.chapter)}" data-page="${c.page}">${esc(c.label)}</button>`).join("");
   goTo(keep, true); update();
 }
 
 // ---------- avvio: prima la copia salvata, poi il foglio aggiornato ----------
+const CACHE_KEY = "belverde-menu-v2";
+const hhmm = () => new Date().toLocaleTimeString("it-IT", {hour:"2-digit", minute:"2-digit"});
 let cached = null;
-try { cached = localStorage.getItem("belverde-menu-csv"); } catch (e) {}
-render((cached && rowsFromCSV(cached)) || FALLBACK);
+try { cached = localStorage.getItem(CACHE_KEY); } catch (e) {}
+let cachedRows = null;
+try { cachedRows = cached ? rowsFromTable(JSON.parse(cached)) : null; } catch (e) {}
+render(cachedRows || FALLBACK, "Versione salvata del menu");
+
+function viaScript() {           // legge il foglio con un <script>: non serve il permesso CORS
+  return new Promise((resolve, reject) => {
+    const cb = "belverde_" + Date.now(), s = document.createElement("script");
+    const done = () => { clearTimeout(timer); try { delete window[cb]; } catch (e) {} s.remove(); };
+    const timer = setTimeout(() => { done(); reject("timeout"); }, 9000);
+    window[cb] = data => {
+      done();
+      try {
+        if (!data || data.status === "error" || !data.table) return reject("errore foglio");
+        const head = data.table.cols.map(c => c.label || "");
+        const body = data.table.rows.map(r => (r.c || []).map(c => c ? String(c.f ?? c.v ?? "") : ""));
+        resolve([head, ...body]);
+      } catch (e) { reject(e); }
+    };
+    s.onerror = () => { done(); reject("rete"); };
+    s.src = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json;responseHandler:${cb}&headers=1&sheet=Menu&t=${Date.now()}`;
+    document.head.appendChild(s);
+  });
+}
+async function viaFetch(url) {
+  const r = await fetch(url + "&t=" + Date.now(), {cache: "no-store"});
+  if (!r.ok) throw r.status;
+  return parseCSV(await r.text());
+}
+
 (async () => {
-  for (const url of SHEET_URLS) {
+  if (!SHEET_ID) return;
+  const tries = [viaScript, ...SHEET_URLS.map(u => () => viaFetch(u))];
+  for (const attempt of tries) {
     try {
-      const r = await fetch(url + "&t=" + Date.now(), {cache: "no-store"});
-      if (!r.ok) continue;
-      const text = await r.text();
-      const rows = rowsFromCSV(text);
+      const table = await attempt();
+      const rows = rowsFromTable(table);
       if (!rows) continue;
-      if (text !== cached) {
-        try { localStorage.setItem("belverde-menu-csv", text); } catch (e) {}
-        render(rows);
-      }
+      const text = JSON.stringify(table);
+      try { localStorage.setItem(CACHE_KEY, text); } catch (e) {}
+      render(rows, "Menu aggiornato alle " + hhmm());
       return;
     } catch (e) {}
   }
+  render(cachedRows || FALLBACK, "Versione salvata del menu (foglio non raggiungibile)");
 })();
 
 </script>
