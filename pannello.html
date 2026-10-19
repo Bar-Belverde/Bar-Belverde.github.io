@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#139AC8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Menu Belverde">
+<title>Pannello menu · Bar Belverde</title>
+<style>
+:root{--blu:#139AC8;--blu2:#0D7FA6;--ink:#14232B;--soft:#5A6B74;--bg:#F1F5F8;--line:#DAE3E9;--card:#fff;--ok:#1E9E5A;--no:#B3261E;--off:#A6B3BA}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:calc(88px + env(safe-area-inset-bottom))}
+[hidden]{display:none!important}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+input,textarea,select{font:inherit;color:inherit;width:100%;border:1.5px solid var(--line);border-radius:12px;padding:11px 12px;background:#fff;appearance:none;-webkit-appearance:none}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--blu);box-shadow:0 0 0 3px rgba(19,154,200,.18)}
+label{display:block;font-weight:600;font-size:14px;margin:12px 0 5px}
+small.h{display:block;color:var(--soft);font-size:13px;margin-top:4px;font-weight:400}
+/* ---- accesso ---- */
+#login{min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:24px}
+.box{background:var(--card);border-radius:20px;padding:26px 22px;width:100%;max-width:380px;box-shadow:0 8px 30px rgba(20,35,43,.08)}
+.box h1{margin:0 0 2px;font-size:24px}.box p{margin:0 0 6px;color:var(--soft)}
+.big{display:block;width:100%;margin-top:16px;padding:14px;border-radius:14px;background:var(--blu);color:#fff;font-weight:700;font-size:17px}
+.big:active{background:var(--blu2)}.big[disabled]{opacity:.6}
+.err{color:var(--no);font-size:14px;margin:10px 0 0;min-height:20px}
+/* ---- barra alta ---- */
+header{position:sticky;top:0;z-index:20;background:var(--blu);color:#fff;padding:calc(10px + env(safe-area-inset-top)) 14px 10px}
+.top{display:flex;align-items:center;gap:8px}
+.top h1{flex:1;margin:0;font-size:18px;line-height:1.2}.top h1 small{display:block;font-weight:400;opacity:.85;font-size:12.5px}
+.ib{background:rgba(255,255,255,.18);border-radius:10px;padding:8px 11px;font-size:14px;font-weight:600;color:#fff;text-decoration:none;white-space:nowrap}
+.search{margin-top:10px;position:relative}
+.search input{border:0;padding:12px 14px 12px 40px;border-radius:12px}
+.search:before{content:"";position:absolute;left:14px;top:50%;width:14px;height:14px;margin-top:-9px;border:2.5px solid var(--soft);border-radius:50%}
+.search:after{content:"";position:absolute;left:28px;top:50%;width:7px;height:2.5px;margin-top:6px;background:var(--soft);transform:rotate(45deg);border-radius:2px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:10px 14px 4px;margin:0 -14px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;padding:8px 14px;border-radius:999px;background:rgba(255,255,255,.2);color:#fff;font-weight:600;font-size:14.5px}
+.chip.on{background:#fff;color:var(--blu2)}
+.chip i{font-style:normal;opacity:.75;font-weight:500;margin-left:5px;font-size:12.5px}
+/* ---- elenco ---- */
+main{padding:12px 12px 0;max-width:720px;margin:0 auto}
+.cat{margin:18px 4px 8px;font-size:13px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--soft)}
+.cat{display:flex;align-items:center;justify-content:space-between}.cat button{background:var(--blu);color:#fff;border-radius:999px;width:30px;height:30px;font-size:19px;line-height:1;padding:0;font-weight:700;letter-spacing:0}
+.sezlab{font-weight:600;font-size:12px;color:var(--blu2);margin-left:6px;text-transform:none;letter-spacing:0}
+.it{display:flex;align-items:center;gap:10px;background:var(--card);border-radius:14px;padding:10px 10px 10px 12px;margin-bottom:8px;border:1px solid var(--line)}
+.it.off .tx{opacity:.5}.it.off .tx b{text-decoration:line-through}
+.tx{flex:1;min-width:0;text-align:left}
+.tx b{display:block;font-size:16px;line-height:1.25}.tx small{display:block;color:var(--soft);font-size:13px;line-height:1.3}
+.tx i{display:block;font-style:normal;color:var(--soft);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.pr{flex:0 0 auto;min-width:64px;text-align:right;font-weight:700;font-size:16px;padding:8px 6px;border-radius:10px;background:#EEF4F7;color:var(--ink)}
+.pr.vuoto{color:var(--off);font-weight:500}
+.pr small{font-weight:400;color:var(--soft)}
+.sw{position:relative;flex:0 0 auto;width:50px;height:30px}
+.sw input{position:absolute;inset:0;opacity:0;margin:0;width:100%;height:100%;z-index:2;cursor:pointer}
+.sw span{position:absolute;inset:0;background:var(--off);border-radius:999px;transition:.15s}
+.sw span:before{content:"";position:absolute;left:3px;top:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:.15s;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.sw input:checked+span{background:var(--ok)}.sw input:checked+span:before{transform:translateX(20px)}
+.nota{display:block;width:100%;text-align:left;background:#FFF6D6;border:1px solid #F0DE9C;border-radius:14px;padding:10px 12px;margin-bottom:8px;font-size:14px}
+.nota b{display:block;font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:#8A6D00;margin-bottom:2px}
+.vuota{text-align:center;color:var(--soft);padding:36px 12px}
+.fab{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:calc(16px + env(safe-area-inset-bottom));z-index:15;background:var(--ink);color:#fff;border-radius:999px;padding:15px 22px;font-weight:700;font-size:16px;box-shadow:0 6px 18px rgba(20,35,43,.3)}
+.agg{text-align:center;color:var(--soft);font-size:12.5px;margin:18px 0 6px}
+/* ---- modifica ---- */
+.ed{position:fixed;inset:0;z-index:40;background:rgba(20,35,43,.5);display:flex;align-items:flex-end;justify-content:center}
+.ed-box{background:#fff;width:100%;max-width:560px;max-height:94dvh;overflow:auto;border-radius:22px 22px 0 0;padding:16px 16px calc(18px + env(safe-area-inset-bottom))}
+.ed-h{display:flex;align-items:center;justify-content:space-between;gap:10px;position:sticky;top:-16px;background:#fff;padding:2px 0 6px;z-index:2}
+.ed-h b{font-size:19px}.x{font-size:22px;padding:6px 10px;color:var(--soft)}
+.sw2{display:flex;align-items:center;gap:12px;margin-top:14px;font-weight:600}.sw2 .sw{margin:0}
+details{margin-top:12px;border-top:1px solid var(--line);padding-top:8px}summary{cursor:pointer;font-weight:600;color:var(--blu2);padding:6px 0}
+.row2{display:flex;gap:8px;margin-top:10px}.row2 button{flex:1;padding:12px 6px;border-radius:12px;background:#EEF4F7;font-weight:600;font-size:15px}
+.row2 .danger{background:#FCEBE9;color:var(--no)}.row2 .danger.sicuro{background:var(--no);color:#fff}
+.cn{margin-top:8px}
+#toast{position:fixed;left:50%;top:calc(12px + env(safe-area-inset-top));transform:translateX(-50%);z-index:60;background:var(--ink);color:#fff;padding:12px 18px;border-radius:14px;font-size:15px;max-width:90vw;text-align:center;box-shadow:0 6px 20px rgba(0,0,0,.3)}
+#toast.e{background:var(--no)}
+</style>
+</head>
+<body>
+
+<section id="login" hidden>
+  <div class="box">
+    <h1>Pannello del menu</h1>
+    <p>Bar Belverde</p>
+    <p id="avvisoFile" class="err" hidden style="background:#FCEBE9;padding:10px;border-radius:10px">Stai aprendo questo file direttamente dal telefono: così non può collegarsi. Aprilo da <b>https://bar-belverde.github.io/pannello.html</b>.</p>
+    <label for="codice">Codice di accesso</label>
+    <input id="codice" type="password" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="il codice che avete scelto">
+    <div id="urlbox" hidden>
+      <label for="urlin">Indirizzo dello script</label>
+      <input id="urlin" type="url" placeholder="https://script.google.com/macros/s/…/exec" autocapitalize="off" spellcheck="false">
+      <small class="h">Si inserisce una volta sola su questo telefono.</small>
+    </div>
+    <label style="display:flex;align-items:center;gap:8px;font-weight:400;margin-top:10px"><input type="checkbox" id="mostraCodice" style="width:auto"> Mostra il codice</label>
+    <button class="big" id="entra">Entra</button>
+    <p class="err" id="errlogin" role="alert"></p>
+  </div>
+</section>
+
+<div id="app" hidden>
+  <header>
+    <div class="top">
+      <h1>Bar Belverde<small>Pannello del menu</small></h1>
+      <a class="ib" id="vedi" href="https://bar-belverde.github.io/" target="_blank" rel="noopener">Vedi il menu</a>
+      <button class="ib" id="esci" aria-label="Esci">Esci</button>
+    </div>
+    <div class="search"><input id="q" type="search" placeholder="Cerca un prodotto…" autocomplete="off" aria-label="Cerca"></div>
+    <div class="chips" id="chips"></div>
+  </header>
+  <main id="lista"></main>
+  <div class="agg" id="agg"></div>
+  <button class="fab" id="piu">＋ Aggiungi</button>
+</div>
+
+<div class="ed" id="ed" hidden>
+  <div class="ed-box" role="dialog" aria-modal="true" aria-labelledby="edTitolo">
+    <div class="ed-h"><b id="edTitolo">Modifica</b><button class="x" id="edChiudi" aria-label="Chiudi">✕</button></div>
+    <div id="cNome"><label for="fNome">Nome</label><input id="fNome" autocomplete="off"></div>
+    <div id="cDett"><label for="fDett">Dettaglio <span style="font-weight:400;color:var(--soft)">(testo piccolo accanto al nome)</span></label><input id="fDett" autocomplete="off" placeholder="es. piccolo / grande"></div>
+    <div id="cPrezzo"><label for="fPrezzo">Prezzo</label><input id="fPrezzo" inputmode="decimal" autocomplete="off" placeholder="es. 7,00 oppure 4,00 / 5,00"><small class="h">Solo i numeri, senza €. Vuoto = nessun prezzo.</small></div>
+    <div><label for="fDesc" id="lDesc">Descrizione</label><textarea id="fDesc" rows="3"></textarea></div>
+    <div class="sw2" id="cVis"><label class="sw"><input type="checkbox" id="fVis"><span></span></label><span>Visibile nel menu</span></div>
+    <details id="cAltro"><summary>Altro: sezione, categoria, origine</summary>
+      <label for="fSez">Sezione</label><select id="fSez"></select>
+      <div id="cCat"><label for="fCat">Categoria</label><select id="fCat"></select><input class="cn" id="fCatNew" placeholder="Nome della nuova categoria" hidden></div>
+      <label for="fOrig">Origine</label><input id="fOrig" autocomplete="off" placeholder="es. Scozia, Toscana">
+    </details>
+    <button class="big" id="edSalva">Salva</button>
+    <div class="row2" id="cAzioni"><button id="edSu">↑ Su</button><button id="edGiu">↓ Giù</button><button class="danger" id="edDel">Elimina</button></div>
+  </div>
+</div>
+<div id="toast" hidden></div>
+
+<script>
+// ============================================================
+//  Pannello del menu · Bar Belverde
+//  Incolla qui sotto l'indirizzo dello script (quello che finisce con /exec),
+//  oppure lascia vuoto: la pagina lo chiederà una volta sola.
+// ============================================================
+const SCRIPT_URL = '';
+const LS = { tok: 'belverde-pannello-token', url: 'belverde-pannello-url', sez: 'belverde-pannello-sez' };
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const norm = s => String(s == null ? '' : s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase();
+const get = k => { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } };
+const put = (k, v) => { try { v ? localStorage.setItem(k, v) : localStorage.removeItem(k); } catch (e) {} };
+if (/[?&]reset=1/.test(location.search)) { put(LS.tok, ''); put(LS.url, ''); put(LS.sez, ''); try { history.replaceState(null, '', location.pathname); } catch (e) {} }
+let URL_ = SCRIPT_URL || get(LS.url);
+const S = { token: get(LS.tok), righe: [], sez: get(LS.sez), q: '', ed: null, quando: null };
+
+// ---------- messaggi ----------
+let tt; function avviso(testo, errore) { const t = $('toast'); t.textContent = testo; t.className = errore ? 'e' : ''; t.hidden = false; clearTimeout(tt); tt = setTimeout(() => { t.hidden = true; }, errore ? 5200 : 2600); }
+
+// ---------- comunicazione con lo script ----------
+async function chiama(azione, dati) {
+  if (!URL_) throw new Error('Manca l\'indirizzo dello script.');
+  let r;
+  try { r = await fetch(URL_, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(Object.assign({ azione, token: S.token }, dati || {})) }); }
+  catch (e) { throw new Error('Non riesco a collegarmi allo script. Controlla: 1) l\'indirizzo finisce con /exec e non contiene «xxx»; 2) nella pubblicazione «Chi ha accesso» è «Chiunque»; 3) la pagina è aperta da bar-belverde.github.io e non da un file; 4) c\'è connessione.'); }
+  let j; try { j = await r.json(); } catch (e) { throw new Error('Risposta non valida dallo script. Controlla l\'indirizzo.'); }
+  if (j.sessione === false) { esci(); throw new Error('Sessione scaduta: rimetti il codice.'); }
+  if (!j.ok) throw new Error(j.errore || 'Qualcosa è andato storto.');
+  return j;
+}
+
+// ---------- accesso ----------
+function mostraLogin(msg) {
+  $('app').hidden = true; $('login').hidden = false;
+  $('urlbox').hidden = !!SCRIPT_URL; if (!SCRIPT_URL && !$('urlin').value) $('urlin').value = URL_ || '';
+  $('avvisoFile').hidden = location.protocol !== 'file:';
+  $('errlogin').textContent = msg || ''; setTimeout(() => $('codice').focus(), 50);
+}
+function esci() { S.token = ''; put(LS.tok, ''); S.righe = []; mostraLogin(); }
+async function entra() {
+  const b = $('entra'); $('errlogin').textContent = '';
+  if (!$('urlbox').hidden) { const u = $('urlin').value.trim(); if (!/^https:\/\/script\.google\.com\/.+\/exec$/.test(u)) { $('errlogin').textContent = 'L\'indirizzo deve iniziare con https://script.google.com e finire con /exec.'; return; } URL_ = u; }
+  const codice = $('codice').value; if (!codice) { $('errlogin').textContent = 'Scrivi il codice.'; return; }
+  b.disabled = true; b.textContent = 'Un attimo…';
+  try { const j = await chiama('entra', { codice }); S.token = j.token; put(LS.tok, j.token); if (!SCRIPT_URL) put(LS.url, URL_); $('codice').value = ''; await apri(); }
+  catch (e) { $('errlogin').textContent = e.message; }
+  finally { b.disabled = false; b.textContent = 'Entra'; }
+}
+async function apri() { const j = await chiama('leggi'); S.righe = j.righe; S.quando = new Date(); $('login').hidden = true; $('app').hidden = false; disegna(); }
+
+// ---------- elenco ----------
+const eNota = r => norm(r.Nome) === 'nota';
+const sezioni = () => { const a = []; S.righe.forEach(r => { if (r.Sezione && !a.includes(r.Sezione)) a.push(r.Sezione); }); return a; };
+const categorie = sez => { const a = []; S.righe.forEach(r => { if (r.Sezione === sez && r.Categoria && !a.includes(r.Categoria)) a.push(r.Categoria); }); return a; };
+function prezzoHTML(p) { return p ? esc(p) : '<small>—</small>'; }
+function voceHTML(r, conSezione) {
+  const vis = norm(r.Visibile).charAt(0) !== 'n';
+  if (eNota(r)) return `<button class="nota" data-r="${r.r}" data-az="edit"><b>Nota${r.Dettaglio ? ' · ' + esc(r.Dettaglio) : ''}</b>${esc(r.Descrizione)}</button>`;
+  return `<div class="it ${vis ? '' : 'off'}" data-r="${r.r}">
+    <label class="sw" title="Visibile nel menu"><input type="checkbox" data-az="vis" ${vis ? 'checked' : ''} aria-label="Visibile: ${esc(r.Nome)}"><span></span></label>
+    <button class="tx" data-az="edit"><b>${esc(r.Nome)}</b>${r.Dettaglio ? '<small>' + esc(r.Dettaglio) + '</small>' : ''}${r.Descrizione ? '<i>' + esc(r.Descrizione) + '</i>' : ''}</button>
+    <button class="pr ${r.Prezzo ? '' : 'vuoto'}" data-az="prezzo" aria-label="Cambia il prezzo di ${esc(r.Nome)}">${prezzoHTML(r.Prezzo)}</button></div>`;
+}
+function disegna() {
+  const sez = sezioni();
+  if (!sez.includes(S.sez)) S.sez = sez[0] || '';
+  const cerca = norm(S.q);
+  $('chips').innerHTML = cerca ? '' : sez.map(s => { const v = S.righe.filter(r => r.Sezione === s && !eNota(r)); return `<button class="chip ${s === S.sez ? 'on' : ''}" data-sez="${esc(s)}">${esc(s)}<i>${v.length}</i></button>`; }).join('');
+  let html = '';
+  if (cerca) {
+    const t = S.righe.filter(r => !eNota(r) && norm([r.Nome, r.Dettaglio, r.Descrizione, r.Origine, r.Prezzo, r.Categoria, r.Sezione].join(' ')).includes(cerca));
+    html = t.length ? t.slice(0, 80).map(r => `<div class="cat" style="margin:10px 4px 4px">${esc(r.Sezione)}${r.Categoria ? ' · ' + esc(r.Categoria) : ''}</div>` + voceHTML(r)).join('') + (t.length > 80 ? '<div class="vuota">Ce ne sono altri: scrivi di più per restringere.</div>' : '') : '<div class="vuota">Nessun prodotto trovato.</div>';
+  } else {
+    const righe = S.righe.filter(r => r.Sezione === S.sez); let ultima = null;
+    righe.forEach(r => { const c = r.Categoria || ''; if (c !== ultima) { if (c) html += `<div class="cat"><span>${esc(c)}</span><button data-nuova="${esc(c)}" aria-label="Aggiungi in ${esc(c)}">＋</button></div>`; ultima = c; } html += voceHTML(r); });
+    if (!html) html = '<div class="vuota">Questa sezione è vuota.</div>';
+  }
+  const y = window.scrollY; $('lista').innerHTML = html; window.scrollTo(0, y);
+  $('agg').textContent = S.quando ? 'Elenco aggiornato alle ' + S.quando.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }) + ' · sul menu le modifiche arrivano in pochi minuti' : '';
+}
+function aggiorna(righe) { S.righe = righe; S.quando = new Date(); disegna(); }
+
+// ---------- interruttore "visibile" ----------
+const prima = r => ({ Sezione: r.Sezione, Categoria: r.Categoria, Nome: r.Nome, Dettaglio: r.Dettaglio });
+async function cambiaVisibile(riga, valore, casella) {
+  const r = S.righe.find(x => x.r === riga); if (!r) return;
+  try { const j = await chiama('visibile', { riga, prima: prima(r), valore }); aggiorna(j.righe); avviso(valore === 'no' ? 'Nascosto dal menu' : 'Di nuovo nel menu'); }
+  catch (e) { avviso(e.message, true); if (casella) casella.checked = !casella.checked; }
+}
+
+// ---------- modifica / nuovo ----------
+function riempiSelect(sel, valori, scelto) { sel.innerHTML = valori.map(v => `<option value="${esc(v)}" ${v === scelto ? 'selected' : ''}>${esc(v)}</option>`).join(''); }
+function aggiornaCategorie(scelta) {
+  const cats = categorie($('fSez').value), sel = $('fCat');
+  $('cCat').hidden = !cats.length; $('fCatNew').hidden = true; $('fCatNew').value = '';
+  sel.innerHTML = cats.map(c => `<option value="${esc(c)}" ${c === scelta ? 'selected' : ''}>${esc(c)}</option>`).join('') + '<option value="__nuova">＋ Nuova categoria…</option>';
+}
+function apriEditor(r, focus, preset) {
+  const nuovo = !r, nota = r && eNota(r);
+  S.ed = { r, nuovo, nota };
+  const sez = sezioni(); const cur = r || { Sezione: S.sez || sez[0], Categoria: (preset && preset.Categoria) || '', Nome: '', Dettaglio: '', Origine: '', Descrizione: '', Prezzo: '', Visibile: 'sì' };
+  $('edTitolo').textContent = nuovo ? 'Nuovo prodotto' : nota ? 'Modifica la nota' : 'Modifica';
+  $('cNome').hidden = nota; $('cPrezzo').hidden = nota; $('cAltro').hidden = nota; $('cDett').hidden = false; $('cVis').hidden = false;
+  $('lDesc').textContent = nota ? 'Testo della nota' : 'Descrizione';
+  $('fNome').value = cur.Nome; $('fDett').value = cur.Dettaglio; $('fPrezzo').value = cur.Prezzo; $('fDesc').value = cur.Descrizione; $('fOrig').value = cur.Origine;
+  $('fVis').checked = norm(cur.Visibile).charAt(0) !== 'n';
+  riempiSelect($('fSez'), sez, cur.Sezione); aggiornaCategorie(cur.Categoria);
+  if (nuovo && categorie(cur.Sezione).length && !cur.Categoria) { /* prima categoria dell'elenco, già selezionata */ }
+  $('cAzioni').hidden = nuovo; $('edDel').hidden = nota; $('edDel').classList.remove('sicuro'); $('edDel').textContent = 'Elimina';
+  $('cAltro').open = nuovo; $('edSalva').textContent = nuovo ? 'Aggiungi al menu' : 'Salva'; $('ed').hidden = false;
+  setTimeout(() => { const f = { prezzo: $('fPrezzo'), nome: $('fNome') }[focus] || (nota ? $('fDesc') : $('fNome')); if (nuovo || focus === 'prezzo') { f.focus(); if (f.select) f.select(); } }, 80);
+}
+const chiudiEditor = () => { $('ed').hidden = true; S.ed = null; };
+function datiEditor() {
+  const e = S.ed; const d = { Dettaglio: $('fDett').value, Descrizione: $('fDesc').value, Visibile: $('fVis').checked ? 'sì' : 'no' };
+  if (!e.nota) {
+    d.Nome = $('fNome').value; d.Prezzo = $('fPrezzo').value; d.Origine = $('fOrig').value; d.Sezione = $('fSez').value;
+    const cs = $('fCat').value; d.Categoria = $('cCat').hidden ? '' : (cs === '__nuova' ? $('fCatNew').value : cs);
+    if (cs === '__nuova' && !$('cCat').hidden) d.nuovaCategoria = true;
+  }
+  return d;
+}
+async function salva() {
+  const e = S.ed; if (!e) return; const b = $('edSalva'), t = b.textContent; b.disabled = true; b.textContent = 'Salvo…';
+  try {
+    const d = datiEditor();
+    const j = e.nuovo ? await chiama('nuovo', { dati: d }) : await chiama('salva', { riga: e.r.r, prima: prima(e.r), dati: d });
+    chiudiEditor(); aggiorna(j.righe); if (e.nuovo) { S.sez = d.Sezione; put(LS.sez, S.sez); disegna(); } avviso(e.nuovo ? 'Aggiunto ✓' : 'Salvato ✓');
+  } catch (err) { avviso(err.message, true); }
+  finally { b.disabled = false; b.textContent = t; }
+}
+async function sposta(dir) {
+  const e = S.ed; if (!e || e.nuovo) return;
+  try { const j = await chiama('muovi', { riga: e.r.r, prima: prima(e.r), direzione: dir }); chiudiEditor(); aggiorna(j.righe); avviso(dir === 'su' ? 'Spostato su' : 'Spostato giù'); }
+  catch (err) { avviso(err.message, true); }
+}
+async function elimina() {
+  const e = S.ed, b = $('edDel'); if (!e || e.nuovo) return;
+  if (!b.classList.contains('sicuro')) { b.classList.add('sicuro'); b.textContent = 'Sicuro? Tocca di nuovo'; setTimeout(() => { b.classList.remove('sicuro'); b.textContent = 'Elimina'; }, 4000); return; }
+  try { const j = await chiama('elimina', { riga: e.r.r, prima: prima(e.r) }); chiudiEditor(); aggiorna(j.righe); avviso('Eliminato. Per nasconderlo basta l\'interruttore.'); }
+  catch (err) { avviso(err.message, true); }
+}
+
+// ---------- eventi ----------
+$('entra').onclick = entra;
+$('codice').onkeydown = e => { if (e.key === 'Enter') entra(); };
+$('urlin').onkeydown = e => { if (e.key === 'Enter') entra(); };
+$('esci').onclick = esci;
+$('mostraCodice').onchange = e => { $('codice').type = e.target.checked ? 'text' : 'password'; };
+$('q').oninput = e => { S.q = e.target.value; disegna(); };
+$('piu').onclick = () => apriEditor(null);
+$('edChiudi').onclick = chiudiEditor; $('ed').onclick = e => { if (e.target === $('ed')) chiudiEditor(); };
+$('edSalva').onclick = salva; $('edSu').onclick = () => sposta('su'); $('edGiu').onclick = () => sposta('giu'); $('edDel').onclick = elimina;
+$('fSez').onchange = () => aggiornaCategorie('');
+$('fCat').onchange = () => { $('fCatNew').hidden = $('fCat').value !== '__nuova'; if (!$('fCatNew').hidden) $('fCatNew').focus(); };
+$('chips').onclick = e => { const b = e.target.closest('[data-sez]'); if (!b) return; S.sez = b.dataset.sez; put(LS.sez, S.sez); S.q = ''; $('q').value = ''; disegna(); window.scrollTo(0, 0); };
+$('lista').onclick = e => {
+  const nu = e.target.closest('[data-nuova]'); if (nu) { apriEditor(null, '', { Categoria: nu.dataset.nuova }); return; }
+  const el = e.target.closest('[data-az]'); if (!el) return;
+  const riga = Number((el.closest('[data-r]') || {}).dataset?.r), r = S.righe.find(x => x.r === riga); if (!r) return;
+  if (el.dataset.az === 'vis') return;                       // lo gestisce "change"
+  apriEditor(r, el.dataset.az === 'prezzo' ? 'prezzo' : '');
+};
+$('lista').onchange = e => { const c = e.target.closest('[data-az="vis"]'); if (!c) return; const riga = Number(c.closest('[data-r]').dataset.r); cambiaVisibile(riga, c.checked ? 'sì' : 'no', c); };
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('ed').hidden) chiudiEditor(); });
+
+// ---------- avvio ----------
+(async function () {
+  if (!URL_ && !S.token) { mostraLogin(); return; }
+  if (S.token) { try { await apri(); return; } catch (e) { mostraLogin(e.message && !/Sessione/.test(e.message) ? e.message : ''); return; } }
+  mostraLogin();
+})();
+</script>
+</body>
+</html>
